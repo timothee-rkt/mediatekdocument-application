@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
 using System.Linq;
+using System.Diagnostics;
 
 namespace MediaTekDocuments.dal
 {
@@ -49,10 +50,17 @@ namespace MediaTekDocuments.dal
             {
                 authenticationString = "admin:adminpwd";
                 api = ApiRest.GetInstance(uriApi, authenticationString);
+
+                // Configuration des logs
+                string logFilePath = "logs.txt";
+                TextWriterTraceListener listener = new TextWriterTraceListener(logFilePath);
+                Trace.Listeners.Add(listener);
+                Trace.AutoFlush = true;
+                Trace.TraceInformation("Initialisation de la classe Access.");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Trace.TraceError("Erreur lors de l'initialisation de Access : " + e.Message);
                 Environment.Exit(0);
             }
         }
@@ -139,8 +147,38 @@ namespace MediaTekDocuments.dal
         public List<Exemplaire> GetExemplairesRevue(string idDocument)
         {
             String jsonIdDocument = convertToJson("id", idDocument);
-            List<Exemplaire> lesExemplaires = TraitementRecup<Exemplaire>(GET, "exemplaire/" + jsonIdDocument, null);
+            List<Exemplaire> lesExemplaires = TraitementRecup<Exemplaire>(GET, "exemplaire/revue/" + idDocument, null);
             return lesExemplaires;
+        }
+
+        public List<Exemplaire> GetExemplairesLivre(string idLivre)
+        {
+            if (string.IsNullOrWhiteSpace(idLivre)) return new List<Exemplaire>();
+            return TraitementRecup<Exemplaire>(GET, "exemplaire/livre/" + idLivre, null);
+        }
+
+        public List<Exemplaire> GetExemplairesDvd(string idDvd)
+        {
+            if (string.IsNullOrWhiteSpace(idDvd)) return new List<Exemplaire>();
+            return TraitementRecup<Exemplaire>(GET, "exemplaire/dvd/" + idDvd, null);
+        }
+
+        public List<Etat> GetAllEtats()
+        {
+            return TraitementRecup<Etat>(GET, "etat", null);
+        }
+
+        public bool ModifierExemplaire(Exemplaire exemplaire)
+        {
+            if (exemplaire == null) return false;
+            String jsonExemplaire = JsonConvert.SerializeObject(exemplaire, new CustomDateTimeConverter());
+            return TraitementEcriture("PUT", "exemplaire", "champs=" + jsonExemplaire);
+        }
+
+        public bool SupprimerExemplaire(string idDocument, int numero)
+        {
+            if (string.IsNullOrWhiteSpace(idDocument) || numero <= 0) return false;
+            return TraitementEcriture("DELETE", $"exemplaire/{idDocument}/{numero}", null);
         }
 
         /// <summary>
@@ -161,6 +199,119 @@ namespace MediaTekDocuments.dal
                 Console.WriteLine(ex.Message);
             }
             return false;
+        }
+
+        /// <summary>
+        /// Ecriture simple vers l'API (POST, PUT, DELETE)
+        /// </summary>
+        /// <param name="methode"></param>
+        /// <param name="message"></param>
+        /// <param name="parametres"></param>
+        /// <returns></returns>
+        private bool TraitementEcriture(String methode, String message, String parametres)
+        {
+            try
+            {
+                JObject retour = api.RecupDistant(methode, message, parametres);
+                String code = (String)retour["code"];
+                return code != null && code.Equals("200");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Erreur lors de l'accès à l'API : " + e.Message);
+            }
+            return false;
+        }
+
+        public bool CreerLivre(Livre livre)
+        {
+            String jsonLivre = JsonConvert.SerializeObject(livre, new CustomDateTimeConverter());
+            return TraitementEcriture(POST, "livre", "champs=" + jsonLivre);
+        }
+
+        public bool ModifierLivre(Livre livre)
+        {
+            String jsonLivre = JsonConvert.SerializeObject(livre, new CustomDateTimeConverter());
+            return TraitementEcriture("PUT", "livre", "champs=" + jsonLivre);
+        }
+
+        public bool SupprimerLivre(string idLivre)
+        {
+            if (string.IsNullOrWhiteSpace(idLivre)) return false;
+            return TraitementEcriture("DELETE", "livre/" + idLivre, null);
+        }
+
+        public bool CreerDvd(Dvd dvd)
+        {
+            String jsonDvd = JsonConvert.SerializeObject(dvd, new CustomDateTimeConverter());
+            return TraitementEcriture(POST, "dvd", "champs=" + jsonDvd);
+        }
+
+        public bool ModifierDvd(Dvd dvd)
+        {
+            String jsonDvd = JsonConvert.SerializeObject(dvd, new CustomDateTimeConverter());
+            return TraitementEcriture("PUT", "dvd", "champs=" + jsonDvd);
+        }
+
+        public bool SupprimerDvd(string idDvd)
+        {
+            if (string.IsNullOrWhiteSpace(idDvd)) return false;
+            return TraitementEcriture("DELETE", "dvd/" + idDvd, null);
+        }
+
+        public bool CreerRevue(Revue revue)
+        {
+            String jsonRevue = JsonConvert.SerializeObject(revue, new CustomDateTimeConverter());
+            return TraitementEcriture(POST, "revue", "champs=" + jsonRevue);
+        }
+
+        public bool ModifierRevue(Revue revue)
+        {
+            String jsonRevue = JsonConvert.SerializeObject(revue, new CustomDateTimeConverter());
+            return TraitementEcriture("PUT", "revue", "champs=" + jsonRevue);
+        }
+
+        public bool SupprimerRevue(string idRevue)
+        {
+            if (string.IsNullOrWhiteSpace(idRevue)) return false;
+            return TraitementEcriture("DELETE", "revue/" + idRevue, null);
+        }
+
+        public List<CommandeDocument> GetCommandesLivre(string idLivre)
+        {
+            if (string.IsNullOrWhiteSpace(idLivre)) return new List<CommandeDocument>();
+            return TraitementRecup<CommandeDocument>(GET, "commande/livre/" + idLivre, null);
+        }
+
+        public List<CommandeDocument> GetCommandesDvd(string idDvd)
+        {
+            if (string.IsNullOrWhiteSpace(idDvd)) return new List<CommandeDocument>();
+            return TraitementRecup<CommandeDocument>(GET, "commande/dvd/" + idDvd, null);
+        }
+
+        public List<CommandeDocument> GetCommandesRevue()
+        {
+            return TraitementRecup<CommandeDocument>(GET, "commande/revue", null);
+        }
+
+        public bool CreerCommandeDocument(CommandeDocument commande)
+        {
+            if (commande == null) return false;
+            String jsonCommande = JsonConvert.SerializeObject(commande, new CustomDateTimeConverter());
+            return TraitementEcriture(POST, "commande", "champs=" + jsonCommande);
+        }
+
+        public bool ModifierCommandeDocument(CommandeDocument commande)
+        {
+            if (commande == null) return false;
+            String jsonCommande = JsonConvert.SerializeObject(commande, new CustomDateTimeConverter());
+            return TraitementEcriture("PUT", "commande", "champs=" + jsonCommande);
+        }
+
+        public bool SupprimerCommandeDocument(string idCommande)
+        {
+            if (string.IsNullOrWhiteSpace(idCommande)) return false;
+            return TraitementEcriture("DELETE", "commande/" + idCommande, null);
         }
 
         /// <summary>

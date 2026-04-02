@@ -1941,6 +1941,14 @@ namespace MediaTekDocuments.view
         private System.Windows.Forms.DataGridView dgvRevuesListe;
         private System.Windows.Forms.Label label34;
         private System.Windows.Forms.TextBox txbRevuesTitreRecherche;
+        private System.Windows.Forms.DataGridView dgvLivresExemplairesListe;
+        private System.Windows.Forms.DataGridView dgvDvdExemplairesListe;
+        private System.Windows.Forms.ComboBox cbxLivresExemplaireEtat;
+        private System.Windows.Forms.ComboBox cbxDvdExemplaireEtat;
+        private System.Windows.Forms.Button btnLivresExemplaireChangerEtat;
+        private System.Windows.Forms.Button btnLivresExemplaireSupprimer;
+        private System.Windows.Forms.Button btnDvdExemplaireChangerEtat;
+        private System.Windows.Forms.Button btnDvdExemplaireSupprimer;
         private System.Windows.Forms.Button btnReceptionRechercher;
         private System.Windows.Forms.TextBox txbReceptionRevueImage;
         private System.Windows.Forms.TextBox txbReceptionRevueRayon;

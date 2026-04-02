@@ -21,6 +21,46 @@ namespace MediaTekDocuments.view
         private readonly BindingSource bdgPublics = new BindingSource();
         private readonly BindingSource bdgRayons = new BindingSource();
 
+        // Actions Livres/Dvd/Revues
+        private bool enCoursAjoutLivre = false;
+        private bool enCoursEditionLivre = false;
+        private bool enCoursAjoutDvd = false;
+        private bool enCoursEditionDvd = false;
+        private bool enCoursAjoutRevue = false;
+        private bool enCoursEditionRevue = false;
+
+        private Button btnLivresAjouter;
+        private Button btnLivresModifier;
+        private Button btnLivresSupprimer;
+
+        private Button btnDvdAjouter;
+        private Button btnDvdModifier;
+        private Button btnDvdSupprimer;
+
+        private Button btnRevuesAjouter;
+        private Button btnRevuesModifier;
+        private Button btnRevuesSupprimer;
+
+        private DataGridView dgvLivresExemplairesListe;
+        private DataGridView dgvDvdExemplairesListe;
+        private ComboBox cbxLivresExemplaireEtat;
+        private ComboBox cbxDvdExemplaireEtat;
+        private Button btnLivresExemplaireChangerEtat;
+        private Button btnLivresExemplaireSupprimer;
+        private Button btnDvdExemplaireChangerEtat;
+        private Button btnDvdExemplaireSupprimer;
+        private Button btnRevuesModifier;
+        private Button btnRevuesSupprimer;
+
+        private DataGridView dgvLivresExemplairesListe;
+        private DataGridView dgvDvdExemplairesListe;
+        private ComboBox cbxLivresExemplaireEtat;
+        private ComboBox cbxDvdExemplaireEtat;
+        private Button btnLivresExemplaireChangerEtat;
+        private Button btnLivresExemplaireSupprimer;
+        private Button btnDvdExemplaireChangerEtat;
+        private Button btnDvdExemplaireSupprimer;
+
         /// <summary>
         /// Constructeur : création du contrôleur lié à ce formulaire
         /// </summary>
@@ -28,6 +68,88 @@ namespace MediaTekDocuments.view
         {
             InitializeComponent();
             this.controller = new FrmMediatekController();
+            InitialiserCrudDocumentButtons();
+            AfficherEtatsExemplaires();
+            AfficherAlerteAbonnementsExpirant();
+        }
+
+        private void AfficherAlerteAbonnementsExpirant()
+        {
+            var abonnements = controller.GetAbonnementsRevueFinissantDans30Jours();
+            if (abonnements != null && abonnements.Count > 0)
+            {
+                FrmAlerteAbonnements alerteForm = new FrmAlerteAbonnements(abonnements);
+                alerteForm.ShowDialog();
+            }
+        }
+
+        private void InitialiserCrudDocumentButtons()
+        {
+            // Livres
+            btnLivresAjouter = new Button { Text = "Ajouter", Width = 80, Height = 30, Left = 630, Top = 20 };
+            btnLivresModifier = new Button { Text = "Modifier", Width = 80, Height = 30, Left = 720, Top = 20 };
+            btnLivresSupprimer = new Button { Text = "Supprimer", Width = 80, Height = 30, Left = 810, Top = 20 };
+            btnLivresAjouter.Click += BtnLivresAjouter_Click;
+            btnLivresModifier.Click += BtnLivresModifier_Click;
+            btnLivresSupprimer.Click += BtnLivresSupprimer_Click;
+            grpLivresRecherche.Controls.Add(btnLivresAjouter);
+            grpLivresRecherche.Controls.Add(btnLivresModifier);
+            grpLivresRecherche.Controls.Add(btnLivresSupprimer);
+
+            // Dvd
+            btnDvdAjouter = new Button { Text = "Ajouter", Width = 80, Height = 30, Left = 630, Top = 20 };
+            btnDvdModifier = new Button { Text = "Modifier", Width = 80, Height = 30, Left = 720, Top = 20 };
+            btnDvdSupprimer = new Button { Text = "Supprimer", Width = 80, Height = 30, Left = 810, Top = 20 };
+            btnDvdAjouter.Click += BtnDvdAjouter_Click;
+            btnDvdModifier.Click += BtnDvdModifier_Click;
+            btnDvdSupprimer.Click += BtnDvdSupprimer_Click;
+            grpDvdRecherche.Controls.Add(btnDvdAjouter);
+            grpDvdRecherche.Controls.Add(btnDvdModifier);
+            grpDvdRecherche.Controls.Add(btnDvdSupprimer);
+
+            // Revues
+            btnRevuesAjouter = new Button { Text = "Ajouter", Width = 80, Height = 30, Left = 630, Top = 20 };
+            btnRevuesModifier = new Button { Text = "Modifier", Width = 80, Height = 30, Left = 720, Top = 20 };
+            btnRevuesSupprimer = new Button { Text = "Supprimer", Width = 80, Height = 30, Left = 810, Top = 20 };
+            btnRevuesAjouter.Click += BtnRevuesAjouter_Click;
+            btnRevuesModifier.Click += BtnRevuesModifier_Click;
+            btnRevuesSupprimer.Click += BtnRevuesSupprimer_Click;
+            grpRevuesRecherche.Controls.Add(btnRevuesAjouter);
+            grpRevuesRecherche.Controls.Add(btnRevuesModifier);
+            grpRevuesRecherche.Controls.Add(btnRevuesSupprimer);
+
+            var btnGestionCommandes = new Button { Text = "Gestion Commandes", Width = 150, Height = 30, Left = 10, Top = 260 };
+            btnGestionCommandes.Click += BtnGestionCommandes_Click;
+            this.Controls.Add(btnGestionCommandes);
+
+            // Exemplaires Livres/Dvd
+            dgvLivresExemplairesListe = new DataGridView { Left = 10, Top = 350, Width = 850, Height = 120, ReadOnly = true, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AllowUserToAddRows = false, AllowUserToDeleteRows = false };
+            dgvLivresExemplairesListe.ColumnHeaderMouseClick += DgvLivresExemplairesListe_ColumnHeaderMouseClick;
+            dgvLivresExemplairesListe.SelectionChanged += DgvLivresExemplairesListe_SelectionChanged;
+            this.tabLivres.Controls.Add(dgvLivresExemplairesListe);
+
+            dgvDvdExemplairesListe = new DataGridView { Left = 10, Top = 350, Width = 850, Height = 120, ReadOnly = true, SelectionMode = DataGridViewSelectionMode.FullRowSelect, AllowUserToAddRows = false, AllowUserToDeleteRows = false };
+            dgvDvdExemplairesListe.ColumnHeaderMouseClick += DgvDvdExemplairesListe_ColumnHeaderMouseClick;
+            dgvDvdExemplairesListe.SelectionChanged += DgvDvdExemplairesListe_SelectionChanged;
+            this.tabDvd.Controls.Add(dgvDvdExemplairesListe);
+
+            cbxLivresExemplaireEtat = new ComboBox { Left = 10, Top = 475, Width = 150, DropDownStyle = ComboBoxStyle.DropDownList };
+            this.tabLivres.Controls.Add(cbxLivresExemplaireEtat);
+            btnLivresExemplaireChangerEtat = new Button { Text = "Changer état", Left = 170, Top = 473, Width = 100 };
+            btnLivresExemplaireChangerEtat.Click += BtnLivresExemplaireChangerEtat_Click;
+            this.tabLivres.Controls.Add(btnLivresExemplaireChangerEtat);
+            btnLivresExemplaireSupprimer = new Button { Text = "Supprimer ex.", Left = 280, Top = 473, Width = 120 };
+            btnLivresExemplaireSupprimer.Click += BtnLivresExemplaireSupprimer_Click;
+            this.tabLivres.Controls.Add(btnLivresExemplaireSupprimer);
+
+            cbxDvdExemplaireEtat = new ComboBox { Left = 10, Top = 475, Width = 150, DropDownStyle = ComboBoxStyle.DropDownList };
+            this.tabDvd.Controls.Add(cbxDvdExemplaireEtat);
+            btnDvdExemplaireChangerEtat = new Button { Text = "Changer état", Left = 170, Top = 473, Width = 100 };
+            btnDvdExemplaireChangerEtat.Click += BtnDvdExemplaireChangerEtat_Click;
+            this.tabDvd.Controls.Add(btnDvdExemplaireChangerEtat);
+            btnDvdExemplaireSupprimer = new Button { Text = "Supprimer ex.", Left = 280, Top = 473, Width = 120 };
+            btnDvdExemplaireSupprimer.Click += BtnDvdExemplaireSupprimer_Click;
+            this.tabDvd.Controls.Add(btnDvdExemplaireSupprimer);
         }
 
         /// <summary>
@@ -50,6 +172,9 @@ namespace MediaTekDocuments.view
         #region Onglet Livres
         private readonly BindingSource bdgLivresListe = new BindingSource();
         private List<Livre> lesLivres = new List<Livre>();
+        private readonly BindingSource bdgLivresExemplaires = new BindingSource();
+        private List<Exemplaire> lesExemplairesLivres = new List<Exemplaire>();
+        private List<Etat> lesEtats = new List<Etat>();
 
         /// <summary>
         /// Ouverture de l'onglet Livres : 
@@ -64,6 +189,7 @@ namespace MediaTekDocuments.view
             RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxLivresPublics);
             RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxLivresRayons);
             RemplirLivresListeComplete();
+            ConfigurerModeLivres(true, false);
         }
 
         /// <summary>
@@ -260,6 +386,8 @@ namespace MediaTekDocuments.view
                 {
                     Livre livre = (Livre)bdgLivresListe.List[bdgLivresListe.Position];
                     AfficheLivresInfos(livre);
+                    AfficheLivresExemplaires(livre.Id);
+                    AfficherEtatsExemplaires();
                 }
                 catch
                 {
@@ -322,6 +450,324 @@ namespace MediaTekDocuments.view
             cbxLivresPublics.SelectedIndex = -1;
             txbLivresNumRecherche.Text = "";
             txbLivresTitreRecherche.Text = "";
+            if (dgvLivresExemplairesListe != null)
+                dgvLivresExemplairesListe.DataSource = null;
+        }
+
+        private void AfficherEtatsExemplaires()
+        {
+            lesEtats = controller.GetAllEtats();
+            if (cbxLivresExemplaireEtat != null)
+            {
+                cbxLivresExemplaireEtat.DataSource = null;
+                cbxLivresExemplaireEtat.DataSource = lesEtats;
+                cbxLivresExemplaireEtat.DisplayMember = "Libelle";
+                cbxLivresExemplaireEtat.ValueMember = "Id";
+            }
+            if (cbxDvdExemplaireEtat != null)
+            {
+                cbxDvdExemplaireEtat.DataSource = null;
+                cbxDvdExemplaireEtat.DataSource = new List<Etat>(lesEtats);
+                cbxDvdExemplaireEtat.DisplayMember = "Libelle";
+                cbxDvdExemplaireEtat.ValueMember = "Id";
+            }
+        }
+
+        private void RemplirLivresExemplairesListe(List<Exemplaire> exemplaires)
+        {
+            if (exemplaires == null) exemplaires = new List<Exemplaire>();
+            foreach (var ex in exemplaires)
+            {
+                var etat = lesEtats.Find(e => e.Id == ex.IdEtat);
+                ex.EtatLibelle = etat?.Libelle ?? ex.IdEtat;
+            }
+            lesExemplairesLivres = exemplaires.OrderByDescending(x => x.DateAchat).ToList();
+            bdgLivresExemplaires.DataSource = lesExemplairesLivres;
+            if (dgvLivresExemplairesListe != null)
+            {
+                dgvLivresExemplairesListe.DataSource = bdgLivresExemplaires;
+                if (dgvLivresExemplairesListe.Columns.Contains("idEtat")) dgvLivresExemplairesListe.Columns["idEtat"].Visible = false;
+                if (dgvLivresExemplairesListe.Columns.Contains("id")) dgvLivresExemplairesListe.Columns["id"].Visible = false;
+                if (dgvLivresExemplairesListe.Columns.Contains("photo")) dgvLivresExemplairesListe.Columns["photo"].Visible = false;
+                if (dgvLivresExemplairesListe.Columns.Contains("etatLibelle")) dgvLivresExemplairesListe.Columns["etatLibelle"].HeaderText = "Etat";
+                dgvLivresExemplairesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            }
+        }
+
+        private void AfficheLivresExemplaires(string idLivre)
+        {
+            var exs = controller.GetExemplairesLivre(idLivre);
+            RemplirLivresExemplairesListe(exs);
+        }
+
+        private void RemplirDvdExemplairesListe(List<Exemplaire> exemplaires)
+        {
+            if (exemplaires == null) exemplaires = new List<Exemplaire>();
+            foreach (var ex in exemplaires)
+            {
+                var etat = lesEtats.Find(e => e.Id == ex.IdEtat);
+                ex.EtatLibelle = etat?.Libelle ?? ex.IdEtat;
+            }
+            lesExemplairesDvd = exemplaires.OrderByDescending(x => x.DateAchat).ToList();
+            var bdgDvdExemplaires = new BindingSource();
+            bdgDvdExemplaires.DataSource = lesExemplairesDvd;
+            if (dgvDvdExemplairesListe != null)
+            {
+                dgvDvdExemplairesListe.DataSource = bdgDvdExemplaires;
+                if (dgvDvdExemplairesListe.Columns.Contains("idEtat")) dgvDvdExemplairesListe.Columns["idEtat"].Visible = false;
+                if (dgvDvdExemplairesListe.Columns.Contains("id")) dgvDvdExemplairesListe.Columns["id"].Visible = false;
+                if (dgvDvdExemplairesListe.Columns.Contains("photo")) dgvDvdExemplairesListe.Columns["photo"].Visible = false;
+                if (dgvDvdExemplairesListe.Columns.Contains("etatLibelle")) dgvDvdExemplairesListe.Columns["etatLibelle"].HeaderText = "Etat";
+                dgvDvdExemplairesListe.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+            }
+        }
+
+        private void AfficheDvdExemplaires(string idDvd)
+        {
+            var exs = controller.GetExemplairesDvd(idDvd);
+            RemplirDvdExemplairesListe(exs);
+        }
+
+        private void DgvLivresExemplairesListe_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string col = dgvLivresExemplairesListe.Columns[e.ColumnIndex].DataPropertyName;
+            if (col == "Numero") lesExemplairesLivres = lesExemplairesLivres.OrderByDescending(x => x.Numero).ToList();
+            if (col == "DateAchat") lesExemplairesLivres = lesExemplairesLivres.OrderBy(x => x.DateAchat).ToList();
+            if (col == "EtatLibelle") lesExemplairesLivres = lesExemplairesLivres.OrderBy(x => x.EtatLibelle).ToList();
+            dgvLivresExemplairesListe.DataSource = null;
+            dgvLivresExemplairesListe.DataSource = lesExemplairesLivres;
+        }
+
+        private void DgvDvdExemplairesListe_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string col = dgvDvdExemplairesListe.Columns[e.ColumnIndex].DataPropertyName;
+            if (col == "Numero") lesExemplairesDvd = lesExemplairesDvd.OrderByDescending(x => x.Numero).ToList();
+            if (col == "DateAchat") lesExemplairesDvd = lesExemplairesDvd.OrderBy(x => x.DateAchat).ToList();
+            if (col == "EtatLibelle") lesExemplairesDvd = lesExemplairesDvd.OrderBy(x => x.EtatLibelle).ToList();
+            dgvDvdExemplairesListe.DataSource = null;
+            dgvDvdExemplairesListe.DataSource = lesExemplairesDvd;
+        }
+
+        private void DgvLivresExemplairesListe_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvLivresExemplairesListe.CurrentRow != null)
+            {
+                var ex = (Exemplaire)dgvLivresExemplairesListe.CurrentRow.DataBoundItem;
+                cbxLivresExemplaireEtat.SelectedValue = ex.IdEtat;
+            }
+        }
+
+        private void DgvDvdExemplairesListe_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvDvdExemplairesListe.CurrentRow != null)
+            {
+                var ex = (Exemplaire)dgvDvdExemplairesListe.CurrentRow.DataBoundItem;
+                cbxDvdExemplaireEtat.SelectedValue = ex.IdEtat;
+            }
+        }
+
+        private void BtnLivresExemplaireChangerEtat_Click(object sender, EventArgs e)
+        {
+            if (dgvLivresExemplairesListe.CurrentRow == null) return;
+            var ex = (Exemplaire)dgvLivresExemplairesListe.CurrentRow.DataBoundItem;
+            string newEtat = (cbxLivresExemplaireEtat.SelectedItem as Etat)?.Id;
+            if (string.IsNullOrEmpty(newEtat)) return;
+            ex.IdEtat = newEtat;
+            if (controller.ModifierExemplaire(ex))
+            {
+                MessageBox.Show("Etat exemplaire modifié", "Succès");
+                AfficheLivresExemplaires(ex.Id);
+            }
+            else
+            {
+                MessageBox.Show("Erreur modification état", "Erreur");
+            }
+        }
+
+        private void BtnLivresExemplaireSupprimer_Click(object sender, EventArgs e)
+        {
+            if (dgvLivresExemplairesListe.CurrentRow == null) return;
+            var ex = (Exemplaire)dgvLivresExemplairesListe.CurrentRow.DataBoundItem;
+            if (MessageBox.Show("Supprimer cet exemplaire ?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
+            if (controller.SupprimerExemplaire(ex.Id, ex.Numero))
+            {
+                MessageBox.Show("Exemplaire supprimé", "Succès");
+                AfficheLivresExemplaires(ex.Id);
+            }
+            else
+            {
+                MessageBox.Show("Suppression impossible", "Erreur");
+            }
+        }
+
+        private void BtnDvdExemplaireChangerEtat_Click(object sender, EventArgs e)
+        {
+            if (dgvDvdExemplairesListe.CurrentRow == null) return;
+            var ex = (Exemplaire)dgvDvdExemplairesListe.CurrentRow.DataBoundItem;
+            string newEtat = (cbxDvdExemplaireEtat.SelectedItem as Etat)?.Id;
+            if (string.IsNullOrEmpty(newEtat)) return;
+            ex.IdEtat = newEtat;
+            if (controller.ModifierExemplaire(ex))
+            {
+                MessageBox.Show("Etat exemplaire modifié", "Succès");
+                AfficheDvdExemplaires(ex.Id);
+            }
+            else
+            {
+                MessageBox.Show("Erreur modification état", "Erreur");
+            }
+        }
+
+        private void BtnDvdExemplaireSupprimer_Click(object sender, EventArgs e)
+        {
+            if (dgvDvdExemplairesListe.CurrentRow == null) return;
+            var ex = (Exemplaire)dgvDvdExemplairesListe.CurrentRow.DataBoundItem;
+            if (MessageBox.Show("Supprimer cet exemplaire ?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
+            if (controller.SupprimerExemplaire(ex.Id, ex.Numero))
+            {
+                MessageBox.Show("Exemplaire supprimé", "Succès");
+                AfficheDvdExemplaires(ex.Id);
+            }
+            else
+            {
+                MessageBox.Show("Suppression impossible", "Erreur");
+            }
+        }
+        {
+            txbLivresNumero.ReadOnly = !idEditable;
+            txbLivresTitre.ReadOnly = lectureSeule;
+            txbLivresAuteur.ReadOnly = lectureSeule;
+            txbLivresCollection.ReadOnly = lectureSeule;
+            txbLivresIsbn.ReadOnly = lectureSeule;
+            txbLivresImage.ReadOnly = lectureSeule;
+            txbLivresGenre.ReadOnly = lectureSeule;
+            txbLivresPublic.ReadOnly = lectureSeule;
+            txbLivresRayon.ReadOnly = lectureSeule;
+            dgvLivresListe.Enabled = lectureSeule;
+            btnLivresModifier.Enabled = lectureSeule;
+            btnLivresSupprimer.Enabled = lectureSeule;
+            btnLivresAjouter.Text = lectureSeule ? "Ajouter" : "Valider";
+            if (lectureSeule)
+            {
+                enCoursAjoutLivre = false;
+                enCoursEditionLivre = false;
+            }
+        }
+
+        private bool ValiderFormulaireLivres(out Livre livre)
+        {
+            livre = null;
+            if (string.IsNullOrWhiteSpace(txbLivresNumero.Text))
+            {
+                MessageBox.Show("Numéro de document obligatoire", "Erreur");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txbLivresTitre.Text) || string.IsNullOrWhiteSpace(txbLivresAuteur.Text)
+                || string.IsNullOrWhiteSpace(txbLivresCollection.Text) || string.IsNullOrWhiteSpace(txbLivresIsbn.Text))
+            {
+                MessageBox.Show("Tous les champs livre (titre, auteur, collection, ISBN) sont obligatoires", "Erreur");
+                return false;
+            }
+            var genre = cbxLivresGenres.SelectedItem as Categorie;
+            var lePublic = cbxLivresPublics.SelectedItem as Categorie;
+            var rayon = cbxLivresRayons.SelectedItem as Categorie;
+            if (genre == null || lePublic == null || rayon == null)
+            {
+                MessageBox.Show("Sélectionnez un genre, un public et un rayon", "Erreur");
+                return false;
+            }
+            livre = new Livre(txbLivresNumero.Text.Trim(), txbLivresTitre.Text.Trim(), txbLivresImage.Text.Trim(), txbLivresIsbn.Text.Trim(), txbLivresAuteur.Text.Trim(), txbLivresCollection.Text.Trim(),
+                genre.Id, genre.Libelle, lePublic.Id, lePublic.Libelle, rayon.Id, rayon.Libelle);
+            return true;
+        }
+
+        private void BtnLivresAjouter_Click(object sender, EventArgs e)
+        {
+            if (!enCoursAjoutLivre)
+            {
+                enCoursAjoutLivre = true;
+                enCoursEditionLivre = false;
+                VideLivresInfos();
+                ConfigurerModeLivres(false, true);
+                btnLivresModifier.Enabled = false;
+                btnLivresSupprimer.Enabled = false;
+                return;
+            }
+
+            if (!ValiderFormulaireLivres(out Livre nouveauLivre))
+            {
+                return;
+            }
+
+            if (controller.CreerLivre(nouveauLivre))
+            {
+                MessageBox.Show("Livre créé", "Succès");
+                lesLivres = controller.GetAllLivres();
+                RemplirLivresListeComplete();
+                ConfigurerModeLivres(true, false);
+            }
+            else
+            {
+                MessageBox.Show("Impossible de créer le livre", "Erreur");
+            }
+        }
+
+        private void BtnLivresModifier_Click(object sender, EventArgs e)
+        {
+            if (!enCoursEditionLivre)
+            {
+                if (string.IsNullOrWhiteSpace(txbLivresNumero.Text))
+                {
+                    MessageBox.Show("Sélectionnez un livre à modifier", "Information");
+                    return;
+                }
+                enCoursEditionLivre = true;
+                enCoursAjoutLivre = false;
+                ConfigurerModeLivres(false, false);
+                btnLivresAjouter.Enabled = false;
+                btnLivresSupprimer.Enabled = false;
+                return;
+            }
+
+            if (!ValiderFormulaireLivres(out Livre livreModifie))
+            {
+                return;
+            }
+
+            if (controller.ModifierLivre(livreModifie))
+            {
+                MessageBox.Show("Livre modifié", "Succès");
+                lesLivres = controller.GetAllLivres();
+                RemplirLivresListeComplete();
+                ConfigurerModeLivres(true, false);
+            }
+            else
+            {
+                MessageBox.Show("Impossible de modifier le livre", "Erreur");
+            }
+        }
+
+        private void BtnLivresSupprimer_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txbLivresNumero.Text))
+            {
+                MessageBox.Show("Sélectionnez un livre à supprimer", "Information");
+                return;
+            }
+            if (MessageBox.Show("Confirmez-vous la suppression du livre ?", "Attention", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+            if (controller.SupprimerLivre(txbLivresNumero.Text.Trim()))
+            {
+                MessageBox.Show("Livre supprimé", "Succès");
+                lesLivres = controller.GetAllLivres();
+                RemplirLivresListeComplete();
+            }
+            else
+            {
+                MessageBox.Show("Suppression impossible : le livre peut avoir des exemplaires ou des commandes", "Erreur");
+            }
         }
 
         /// <summary>
@@ -379,6 +825,7 @@ namespace MediaTekDocuments.view
             RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxDvdPublics);
             RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxDvdRayons);
             RemplirDvdListeComplete();
+            ConfigurerModeDvd(true, false);
         }
 
         /// <summary>
@@ -575,6 +1022,8 @@ namespace MediaTekDocuments.view
                 {
                     Dvd dvd = (Dvd)bdgDvdListe.List[bdgDvdListe.Position];
                     AfficheDvdInfos(dvd);
+                    AfficheDvdExemplaires(dvd.Id);
+                    AfficherEtatsExemplaires();
                 }
                 catch
                 {
@@ -639,6 +1088,146 @@ namespace MediaTekDocuments.view
             txbDvdTitreRecherche.Text = "";
         }
 
+        private void ConfigurerModeDvd(bool lectureSeule, bool idEditable)
+        {
+            txbDvdNumero.ReadOnly = !idEditable;
+            txbDvdTitre.ReadOnly = lectureSeule;
+            txbDvdRealisateur.ReadOnly = lectureSeule;
+            txbDvdSynopsis.ReadOnly = lectureSeule;
+            txbDvdDuree.ReadOnly = lectureSeule;
+            txbDvdImage.ReadOnly = lectureSeule;
+            txbDvdGenre.ReadOnly = lectureSeule;
+            txbDvdPublic.ReadOnly = lectureSeule;
+            txbDvdRayon.ReadOnly = lectureSeule;
+            dgvDvdListe.Enabled = lectureSeule;
+            btnDvdModifier.Enabled = lectureSeule;
+            btnDvdSupprimer.Enabled = lectureSeule;
+            btnDvdAjouter.Text = lectureSeule ? "Ajouter" : "Valider";
+            if (lectureSeule)
+            {
+                enCoursAjoutDvd = false;
+                enCoursEditionDvd = false;
+            }
+        }
+
+        private bool ValiderFormulaireDvd(out Dvd dvd)
+        {
+            dvd = null;
+            if (string.IsNullOrWhiteSpace(txbDvdNumero.Text))
+            {
+                MessageBox.Show("Numéro de document obligatoire", "Erreur");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txbDvdTitre.Text) || string.IsNullOrWhiteSpace(txbDvdRealisateur.Text)
+                || string.IsNullOrWhiteSpace(txbDvdSynopsis.Text) || string.IsNullOrWhiteSpace(txbDvdDuree.Text))
+            {
+                MessageBox.Show("Tous les champs DVD (titre, réalisateur, synopsis, durée) sont obligatoires", "Erreur");
+                return false;
+            }
+            if (!int.TryParse(txbDvdDuree.Text.Trim(), out int duree) || duree <= 0)
+            {
+                MessageBox.Show("Durée du DVD invalide", "Erreur");
+                return false;
+            }
+            var genre = cbxDvdGenres.SelectedItem as Categorie;
+            var lePublic = cbxDvdPublics.SelectedItem as Categorie;
+            var rayon = cbxDvdRayons.SelectedItem as Categorie;
+            if (genre == null || lePublic == null || rayon == null)
+            {
+                MessageBox.Show("Sélectionnez un genre, un public et un rayon", "Erreur");
+                return false;
+            }
+            dvd = new Dvd(txbDvdNumero.Text.Trim(), txbDvdTitre.Text.Trim(), txbDvdImage.Text.Trim(), duree,
+                txbDvdRealisateur.Text.Trim(), txbDvdSynopsis.Text.Trim(), genre.Id, genre.Libelle,
+                lePublic.Id, lePublic.Libelle, rayon.Id, rayon.Libelle);
+            return true;
+        }
+
+        private void BtnDvdAjouter_Click(object sender, EventArgs e)
+        {
+            if (!enCoursAjoutDvd)
+            {
+                enCoursAjoutDvd = true;
+                enCoursEditionDvd = false;
+                VideDvdInfos();
+                ConfigurerModeDvd(false, true);
+                btnDvdModifier.Enabled = false;
+                btnDvdSupprimer.Enabled = false;
+                return;
+            }
+            if (!ValiderFormulaireDvd(out Dvd nouveauDvd))
+            {
+                return;
+            }
+            if (controller.CreerDvd(nouveauDvd))
+            {
+                MessageBox.Show("DVD créé", "Succès");
+                lesDvd = controller.GetAllDvd();
+                RemplirDvdListeComplete();
+                ConfigurerModeDvd(true, false);
+            }
+            else
+            {
+                MessageBox.Show("Impossible de créer le DVD", "Erreur");
+            }
+        }
+
+        private void BtnDvdModifier_Click(object sender, EventArgs e)
+        {
+            if (!enCoursEditionDvd)
+            {
+                if (string.IsNullOrWhiteSpace(txbDvdNumero.Text))
+                {
+                    MessageBox.Show("Sélectionnez un DVD à modifier", "Information");
+                    return;
+                }
+                enCoursEditionDvd = true;
+                enCoursAjoutDvd = false;
+                ConfigurerModeDvd(false, false);
+                btnDvdAjouter.Enabled = false;
+                btnDvdSupprimer.Enabled = false;
+                return;
+            }
+            if (!ValiderFormulaireDvd(out Dvd dvdModifie))
+            {
+                return;
+            }
+            if (controller.ModifierDvd(dvdModifie))
+            {
+                MessageBox.Show("DVD modifié", "Succès");
+                lesDvd = controller.GetAllDvd();
+                RemplirDvdListeComplete();
+                ConfigurerModeDvd(true, false);
+            }
+            else
+            {
+                MessageBox.Show("Impossible de modifier le DVD", "Erreur");
+            }
+        }
+
+        private void BtnDvdSupprimer_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txbDvdNumero.Text))
+            {
+                MessageBox.Show("Sélectionnez un DVD à supprimer", "Information");
+                return;
+            }
+            if (MessageBox.Show("Confirmez-vous la suppression du DVD ?", "Attention", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+            if (controller.SupprimerDvd(txbDvdNumero.Text.Trim()))
+            {
+                MessageBox.Show("DVD supprimé", "Succès");
+                lesDvd = controller.GetAllDvd();
+                RemplirDvdListeComplete();
+            }
+            else
+            {
+                MessageBox.Show("Suppression impossible : le DVD peut avoir des exemplaires ou des commandes", "Erreur");
+            }
+        }
+
         /// <summary>
         /// Tri sur les colonnes
         /// </summary>
@@ -694,6 +1283,7 @@ namespace MediaTekDocuments.view
             RemplirComboCategorie(controller.GetAllPublics(), bdgPublics, cbxRevuesPublics);
             RemplirComboCategorie(controller.GetAllRayons(), bdgRayons, cbxRevuesRayons);
             RemplirRevuesListeComplete();
+            ConfigurerModeRevues(true, false);
         }
 
         /// <summary>
@@ -939,6 +1529,12 @@ namespace MediaTekDocuments.view
             VideRevuesZones();
         }
 
+        private void BtnGestionCommandes_Click(object sender, EventArgs e)
+        {
+            FrmCommandes formCommandes = new FrmCommandes(controller);
+            formCommandes.ShowDialog();
+        }
+
         /// <summary>
         /// vide les zones de recherche et de filtre
         /// </summary>
@@ -949,6 +1545,150 @@ namespace MediaTekDocuments.view
             cbxRevuesPublics.SelectedIndex = -1;
             txbRevuesNumRecherche.Text = "";
             txbRevuesTitreRecherche.Text = "";
+        }
+
+        private void ConfigurerModeRevues(bool lectureSeule, bool idEditable)
+        {
+            txbRevuesNumero.ReadOnly = !idEditable;
+            txbRevuesTitre.ReadOnly = lectureSeule;
+            txbRevuesPeriodicite.ReadOnly = lectureSeule;
+            txbRevuesDateMiseADispo.ReadOnly = lectureSeule;
+            txbRevuesImage.ReadOnly = lectureSeule;
+            txbRevuesGenre.ReadOnly = lectureSeule;
+            txbRevuesPublic.ReadOnly = lectureSeule;
+            txbRevuesRayon.ReadOnly = lectureSeule;
+            dgvRevuesListe.Enabled = lectureSeule;
+            btnRevuesModifier.Enabled = lectureSeule;
+            btnRevuesSupprimer.Enabled = lectureSeule;
+            btnRevuesAjouter.Text = lectureSeule ? "Ajouter" : "Valider";
+            if (lectureSeule)
+            {
+                enCoursAjoutRevue = false;
+                enCoursEditionRevue = false;
+            }
+        }
+
+        private bool ValiderFormulaireRevues(out Revue revue)
+        {
+            revue = null;
+            if (string.IsNullOrWhiteSpace(txbRevuesNumero.Text))
+            {
+                MessageBox.Show("Numéro de document obligatoire", "Erreur");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txbRevuesTitre.Text) || string.IsNullOrWhiteSpace(txbRevuesPeriodicite.Text)
+                || string.IsNullOrWhiteSpace(txbRevuesDateMiseADispo.Text))
+            {
+                MessageBox.Show("Tous les champs revue (titre, périodicité, délai) sont obligatoires", "Erreur");
+                return false;
+            }
+            if (!int.TryParse(txbRevuesDateMiseADispo.Text.Trim(), out int delai) || delai <= 0)
+            {
+                MessageBox.Show("Délai de mise à dispo invalide", "Erreur");
+                return false;
+            }
+            var genre = cbxRevuesGenres.SelectedItem as Categorie;
+            var lePublic = cbxRevuesPublics.SelectedItem as Categorie;
+            var rayon = cbxRevuesRayons.SelectedItem as Categorie;
+            if (genre == null || lePublic == null || rayon == null)
+            {
+                MessageBox.Show("Sélectionnez un genre, un public et un rayon", "Erreur");
+                return false;
+            }
+            revue = new Revue(txbRevuesNumero.Text.Trim(), txbRevuesTitre.Text.Trim(), txbRevuesImage.Text.Trim(),
+                genre.Id, genre.Libelle, lePublic.Id, lePublic.Libelle, rayon.Id, rayon.Libelle,
+                txbRevuesPeriodicite.Text.Trim(), delai);
+            return true;
+        }
+
+        private void BtnRevuesAjouter_Click(object sender, EventArgs e)
+        {
+            if (!enCoursAjoutRevue)
+            {
+                enCoursAjoutRevue = true;
+                enCoursEditionRevue = false;
+                VideRevuesInfos();
+                ConfigurerModeRevues(false, true);
+                btnRevuesModifier.Enabled = false;
+                btnRevuesSupprimer.Enabled = false;
+                return;
+            }
+            if (!ValiderFormulaireRevues(out Revue nouvelleRevue))
+            {
+                return;
+            }
+            if (controller.CreerRevue(nouvelleRevue))
+            {
+                MessageBox.Show("Revue créée", "Succès");
+                lesRevues = controller.GetAllRevues();
+                RemplirRevuesListeComplete();
+                ConfigurerModeRevues(true, false);
+            }
+            else
+            {
+                MessageBox.Show("Impossible de créer la revue", "Erreur");
+            }
+        }
+
+        private void BtnRevuesModifier_Click(object sender, EventArgs e)
+        {
+            if (!enCoursEditionRevue)
+            {
+                if (string.IsNullOrWhiteSpace(txbRevuesNumero.Text))
+                {
+                    MessageBox.Show("Sélectionnez une revue à modifier", "Information");
+                    return;
+                }
+                enCoursEditionRevue = true;
+                enCoursAjoutRevue = false;
+                ConfigurerModeRevues(false, false);
+                btnRevuesAjouter.Enabled = false;
+                btnRevuesSupprimer.Enabled = false;
+                return;
+            }
+            if (!ValiderFormulaireRevues(out Revue revueModifiee))
+            {
+                return;
+            }
+            if (controller.ModifierRevue(revueModifiee))
+            {
+                MessageBox.Show("Revue modifiée", "Succès");
+                lesRevues = controller.GetAllRevues();
+                RemplirRevuesListeComplete();
+                ConfigurerModeRevues(true, false);
+            }
+            else
+            {
+                MessageBox.Show("Impossible de modifier la revue", "Erreur");
+            }
+        }
+
+        private void BtnRevuesSupprimer_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txbRevuesNumero.Text))
+            {
+                MessageBox.Show("Sélectionnez une revue à supprimer", "Information");
+                return;
+            }
+            if (controller.GetExemplairesRevue(txbRevuesNumero.Text.Trim()).Count > 0)
+            {
+                MessageBox.Show("Impossible de supprimer une revue avec des exemplaires existants", "Erreur");
+                return;
+            }
+            if (MessageBox.Show("Confirmez-vous la suppression de la revue ?", "Attention", MessageBoxButtons.YesNo) != DialogResult.Yes)
+            {
+                return;
+            }
+            if (controller.SupprimerRevue(txbRevuesNumero.Text.Trim()))
+            {
+                MessageBox.Show("Revue supprimée", "Succès");
+                lesRevues = controller.GetAllRevues();
+                RemplirRevuesListeComplete();
+            }
+            else
+            {
+                MessageBox.Show("Suppression impossible : la revue peut avoir des commandes", "Erreur");
+            }
         }
 
         /// <summary>

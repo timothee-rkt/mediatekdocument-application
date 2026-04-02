@@ -70,6 +70,12 @@
     <Compile Include="view\FrmMediatek.Designer.cs">
       <DependentUpon>FrmMediatek.cs</DependentUpon>
     </Compile>
+    <Compile Include="view\FrmCommandes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="view\FrmAlerteAbonnements.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="model\Categorie.cs" />
     <Compile Include="model\Document.cs" />
     <Compile Include="model\Dvd.cs" />
@@ -81,6 +87,8 @@
     <Compile Include="model\Public.cs" />
     <Compile Include="model\Rayon.cs" />
     <Compile Include="model\Revue.cs" />
+    <Compile Include="model\Suivi.cs" />
+    <Compile Include="model\CommandeDocument.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

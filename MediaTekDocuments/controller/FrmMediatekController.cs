@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using MediaTekDocuments.model;
 using MediaTekDocuments.dal;
 
@@ -87,6 +89,31 @@ namespace MediaTekDocuments.controller
             return access.GetExemplairesRevue(idDocuement);
         }
 
+        public List<Exemplaire> GetExemplairesLivre(string idLivre)
+        {
+            return access.GetExemplairesLivre(idLivre);
+        }
+
+        public List<Exemplaire> GetExemplairesDvd(string idDvd)
+        {
+            return access.GetExemplairesDvd(idDvd);
+        }
+
+        public List<Etat> GetAllEtats()
+        {
+            return access.GetAllEtats();
+        }
+
+        public bool ModifierExemplaire(Exemplaire exemplaire)
+        {
+            return access.ModifierExemplaire(exemplaire);
+        }
+
+        public bool SupprimerExemplaire(string idDocument, int numero)
+        {
+            return access.SupprimerExemplaire(idDocument, numero);
+        }
+
         /// <summary>
         /// Crée un exemplaire d'une revue dans la bdd
         /// </summary>
@@ -95,6 +122,102 @@ namespace MediaTekDocuments.controller
         public bool CreerExemplaire(Exemplaire exemplaire)
         {
             return access.CreerExemplaire(exemplaire);
+        }
+
+        // Livres
+        public bool CreerLivre(Livre livre)
+        {
+            return access.CreerLivre(livre);
+        }
+
+        public bool ModifierLivre(Livre livre)
+        {
+            return access.ModifierLivre(livre);
+        }
+
+        public bool SupprimerLivre(string idLivre)
+        {
+            return access.SupprimerLivre(idLivre);
+        }
+
+        // Dvd
+        public bool CreerDvd(Dvd dvd)
+        {
+            return access.CreerDvd(dvd);
+        }
+
+        public bool ModifierDvd(Dvd dvd)
+        {
+            return access.ModifierDvd(dvd);
+        }
+
+        public bool SupprimerDvd(string idDvd)
+        {
+            return access.SupprimerDvd(idDvd);
+        }
+
+        // Revues
+        public bool CreerRevue(Revue revue)
+        {
+            return access.CreerRevue(revue);
+        }
+
+        public bool ModifierRevue(Revue revue)
+        {
+            return access.ModifierRevue(revue);
+        }
+
+        public bool SupprimerRevue(string idRevue)
+        {
+            return access.SupprimerRevue(idRevue);
+        }
+
+        // Commandes documents
+        public List<CommandeDocument> GetCommandesLivre(string idLivre)
+        {
+            return access.GetCommandesLivre(idLivre);
+        }
+
+        public List<CommandeDocument> GetCommandesDvd(string idDvd)
+        {
+            return access.GetCommandesDvd(idDvd);
+        }
+
+        public List<CommandeDocument> GetCommandesRevue(string idRevue)
+        {
+            if (string.IsNullOrWhiteSpace(idRevue)) return new List<CommandeDocument>();
+            return access.GetCommandesRevue().Where(c => c.IdDocument == idRevue).ToList();
+        }
+
+        public bool CreerCommandeDocument(CommandeDocument commande)
+        {
+            return access.CreerCommandeDocument(commande);
+        }
+
+        public bool ModifierCommandeDocument(CommandeDocument commande)
+        {
+            return access.ModifierCommandeDocument(commande);
+        }
+
+        public bool SupprimerCommandeDocument(string idCommande)
+        {
+            return access.SupprimerCommandeDocument(idCommande);
+        }
+
+        public bool ParutionDansAbonnement(DateTime dateCommande, DateTime dateFinAbonnement, DateTime dateParution)
+        {
+            return dateParution >= dateCommande && dateParution <= dateFinAbonnement;
+        }
+
+        public List<CommandeDocument> GetAbonnementsRevueFinissantDans30Jours()
+        {
+            var abonnements = access.GetCommandesRevue();
+            var aujourdHui = DateTime.Today;
+            return abonnements
+                .Where(c => c.DateFinAbonnement.HasValue)
+                .Where(c => c.DateFinAbonnement.Value >= aujourdHui && c.DateFinAbonnement.Value <= aujourdHui.AddDays(30))
+                .OrderBy(c => c.DateFinAbonnement.Value)
+                .ToList();
         }
     }
 }
