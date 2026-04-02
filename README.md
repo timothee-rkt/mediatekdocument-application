@@ -1,6 +1,6 @@
-MediatekDocuments - Extensions et Nouvelles Fonctionnalités
-Ce dépôt est une version étendue de l'application originale, disponible ici : [Lien vers le dépôt d'origine]. Le README du dépôt d'origine contient la présentation initiale du projet et de son contexte.
-✨ Fonctionnalités Ajoutées
+# MediatekDocuments - Extensions et Nouvelles Fonctionnalités
+Ce dépôt est une version étendue de l'application originale, disponible ici :(https://github.com/CNED-SLAM/MediaTekDocuments.git). Le README du dépôt d'origine contient la présentation initiale du projet et de son contexte.
+# ✨ Fonctionnalités Ajoutées
 Dans le cadre de cet atelier, plusieurs missions ont été réalisées pour enrichir l'application et sécuriser son fonctionnement :
 1. Gestion Étendue du Catalogue
 Administration des documents : Possibilité d'ajouter, modifier et supprimer des livres, DVD et revues
@@ -24,11 +24,11 @@ Protection de l'API : Masquage des identifiants de connexion API (précédemment
 .
 Traçabilité : Intégration de journaux d'événements (logs) pour toutes les actions de la couche d'accès aux données
 .
-💻 Installation et Utilisation en Local
+ # 💻 Installation et Utilisation en Local
 Suivez ces étapes pour configurer l'environnement de développement sur votre poste :
 Prérequis
 IDE : Visual Studio 2019 ou supérieur.
-SGBD : MySQL (via XAMPP, WAMP ou Docker).
+SGBD : MySQL (WAMP).
 Serveur Web : Apache (pour l'API PHP).
 Outils : Extensions Specflow et Newtonsoft.json pour Visual Studio, et Postman pour les tests API
 .
